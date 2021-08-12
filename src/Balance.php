@@ -25,6 +25,7 @@ class Balance
         if ($service) {
 
             self::$redis->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.self::$serviceName,$service);
+            $service = json_decode($service,true);
         }
 
         return $service;
