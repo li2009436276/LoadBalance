@@ -23,14 +23,16 @@ class BalanceRedis extends \Redis
     public function roundRobin($serviceName){
 
         $this->del(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.$serviceName);
-        var_dump($serviceName);
+        
         foreach ($this->services as $key=>$value) {
 
             for ($i=0; $i < $value['weight']; $i++) {
 
-                $this->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.$serviceName,json_encode($value),1440);
+                $this->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.$serviceName,json_encode($value));
             }
         }
+
+        @unlink('command.php');
 
     }
 }
