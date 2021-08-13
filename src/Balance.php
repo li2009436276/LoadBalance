@@ -9,6 +9,7 @@ class Balance
 
     private static $serviceName = '';
     private static $redis;
+
     public function __construct($serviceName)
     {
         self::$serviceName = $serviceName;
@@ -19,13 +20,15 @@ class Balance
      * 加权轮训算法
      * @return bool|mixed
      */
-    public static function roundRobin(){
-
-        $service = self::$redis->lPop(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.self::$serviceName);
+    public static function roundRobin()
+    {
+        $service = self::$redis->lPop(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . self::$serviceName);
         if ($service) {
 
-            self::$redis->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX.self::$serviceName,$service);
-            $service = json_decode($service,true);
+            $service = json_decode($service, true);
+            self::$redis->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . self::$serviceName, json_encode($service));
+
+            $service = 'tcp://' . $service['ip'] . ':' . $service['port'];
         }
 
         return $service;
