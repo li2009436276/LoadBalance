@@ -7,26 +7,26 @@ class Balance
 {
 
 
-    private static $serviceName = '';
-    private static $redis;
+    private  $serviceName = '';
+    private  $redis;
 
     public function __construct($serviceName)
     {
-        self::$serviceName = $serviceName;
-        self::$redis = new BalanceRedis();
+        $this->serviceName = $serviceName;
+        $this->redis = new BalanceRedis();
     }
 
     /**
      * 加权轮训算法
      * @return bool|mixed
      */
-    public static function roundRobin()
+    public  function roundRobin()
     {
-        $service = self::$redis->lPop(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . self::$serviceName);
+        $service = $this->redis->lPop(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . $this->serviceName);
         if ($service) {
 
             $service = json_decode($service, true);
-            self::$redis->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . self::$serviceName, json_encode($service));
+            $this->redis->rPush(Config::SERVICE_LIST_ROUND_ROBIN_PREFIX . $this->serviceName, json_encode($service));
 
             $service = 'tcp://' . $service['ip'] . ':' . $service['port'];
         }
